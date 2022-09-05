@@ -1,73 +1,123 @@
-import React from 'react'
-import Table from 'react-bootstrap/Table'
+import React, { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
+import { ADD, DLT, REMOVE } from '../redux/action/action'
 
 function CardsDetalis() {
+
+  const [data, setData] = useState([]);
+  //console.log('Compare Data--->', data);
+
+  const {id} = useParams();
+  // console.log('id params', id);
+
+  const getdata = useSelector((state) => state.cartreducer.carts)
+  //console.log('Card Details data --->', getdata)
+
+  const compare = ()=>{
+    let compareData = getdata.filter((e)=>{
+      return e.id == id;
+    });
+    setData(compareData)
+  }
+
+  useEffect(()=>{
+    compare();
+  }, [id]);
+
+  // to redirect page
+  const history = useNavigate();
+
+  const dispatch = useDispatch()
+  // Add Item
+  const send = (e) => {
+    dispatch(ADD(e))
+  }
+  // Remove All
+  const dlt = (id) => {
+    dispatch(DLT(id))
+    history('/')
+  }
+  // Remove One Item
+  const remove = (item) => {
+    // dispatch(DLT(item.id))
+    // dispatch(REMOVE(item))
+  }
+  
   return (
     <>
       <div className='container mt-2'>
         <h2 className='text-center'>Iteams Details Page</h2>
 
-        <section className='container mt-3'>
+        <section
+          className='container mt-3'
+          style={{
+            paddingBottom: '10rem',
+          }}
+        >
           <div className='iteamsdetails'>
-            <div className='items-img'>
-              <img
-                src='https://b.zmtcdn.com/data/pictures/chains/5/19295245/089cbcf1d3307542c72f77272556b28b_o2_featured_v2.jpg?output-format=webp'
-                alt=''
-              />
-            </div>
-
-            <div className='details'>
-              <Table>
-                <tr>
-                  <td>
-                    <p>
-                      <strong>Restaurant :</strong> londonMM
-                    </p>
-                    <p>
-                      <strong>Price :</strong> $ 300
-                    </p>
-                    <p>
-                      <strong>Dishes :</strong> london
-                    </p>
-                    <p>
-                      <strong>Total :</strong> $ 300
-                    </p>
-                  </td>
-                  <td>
-                    <p>
-                      <strong>Rating :</strong>
-                      <span
-                        style={{
-                          background: 'green',
-                          color: '#fff',
-                          padding: '2px 5px',
-                          borderRadius: '5px',
-                        }}
-                      >
-                        3.5 ★
-                      </span>
-                    </p>
-                    <p>
-                      <strong>Order Review :</strong>
-                      <span>order review</span>
-                    </p>
-                    <p>
-                      <strong>Remove :</strong>
-                      <span>
-                        <i
-                          className='fas fa-trash'
+            {
+              data.map((element)=>{
+                const { id, title, category, price, img, desc, qnty } = element;
+                return (
+                  <>
+                    <article key={id} className='menu-item'>
+                      <img src={img} alt={title} className='photo' />
+                      <div className='item-info'>
+                        <header>
+                          <h4>{title}</h4>
+                          <h4 className='price'>${price}</h4>
+                        </header>
+                        <p className='item-text'>{desc}</p>
+                        <div>
+                          <tr>
+                            <td>
+                              <strong>Total </strong>${price*qnty}
+                            </td>
+                            <td
+                              style={{
+                                color: 'red',
+                                fontSize: 20,
+                                cursor: 'pointer',
+                                paddingLeft: '16.5rem',
+                              }}
+                              onClick={() => {
+                                dlt(id)
+                              }}
+                            >
+                              <i className='fas fa-trash'></i>
+                            </td>
+                          </tr>
+                        </div>
+                        <div
+                          className='mt-5 d-flex justify-content-between align-items-center'
                           style={{
-                            color: 'red',
-                            fontSize: 20,
-                            cursor: 'pointer'
+                            width: 100,
+                            cursor: 'pointer',
+                            background: '#ddd',
+                            color: '#111',
                           }}
-                        ></i>
-                      </span>
-                    </p>
-                  </td>
-                </tr>
-              </Table>
-            </div>
+                        >
+                          <span
+                            style={{ fontSize: 24 }}
+                            onClick={() => remove(element)}
+                          >
+                            -
+                          </span>
+                          <span style={{ fontSize: 20 }}>{qnty}</span>
+                          <span
+                            style={{ fontSize: 24 }}
+                            onClick={() => send(element)}
+                          >
+                            +
+                          </span>
+                        </div>
+                      </div>
+                    </article>
+                  </>
+                )
+              })
+            }
           </div>
         </section>
       </div>
