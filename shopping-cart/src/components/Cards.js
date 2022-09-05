@@ -1,15 +1,18 @@
 import React from 'react'
-import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
 //import Cardsdata from './CardsData'
 import Alldata from './data/data'
-import { useState } from 'react'
 import './style.css'
 import { useDispatch } from 'react-redux'
 import {ADD} from '../redux/action/action'
+import Link from '@mui/material/Link'
+import {
+  Link as RouterLink,
+  LinkProps as RouterLinkProps,
+} from 'react-router-dom'
 
 function Cards({ items }) {
-  const [data, setData] = useState(Alldata)
+
 
   const dispatch = useDispatch()
 
@@ -22,20 +25,40 @@ function Cards({ items }) {
         {items.map((menuItem) => {
           const { id, title, img, desc, price } = menuItem
           return (
-            <article key={id} className='menu-item'>
+            <article
+              key={id}
+              className='menu-item'
+              style={{
+                marginTop: '1rem',
+                marginLeft: '4rem',
+                marginBottom: '5rem',
+              }}
+            >
               <img src={img} alt={title} className='photo' />
               <div className='item-info'>
                 <header>
                   <h4>{title}</h4>
                   <h4 className='price'>${price}</h4>
                 </header>
-                <p className='item-text'>{desc}</p>
                 <Button
                   variant='dark'
                   className='col-lg-12'
                   onClick={() => send(menuItem)}
                 >
                   Add to Cart
+                </Button>
+                <Button
+                  variant='info'
+                  className='col-lg-12'
+                  style={{ marginTop: '1rem' }}
+                >
+                  <Link
+                    component={RouterLink}
+                    to={`/cart/select/${id}`}
+                    className='text-decropation-none text-light'
+                  >
+                    View Details
+                  </Link>
                 </Button>
               </div>
             </article>
